@@ -43,6 +43,31 @@ embedding them. The file still works if it was saved with Windows (CRLF) line
 endings. `scripts/make_text_bundle.py` regenerates it, and `scripts/package.sh`
 runs that automatically.
 
+## PowerShell version
+
+[`release/licoryx_spl_owner_manager-0.1.0.ps1`](release/licoryx_spl_owner_manager-0.1.0.ps1)
+is the same readable source as the `.txt` file (identical `#|` lines, which
+PowerShell treats as comments), with a PowerShell program in place of the
+Python one. It needs only Windows PowerShell 5.1 or PowerShell 7: no Python,
+no `tar.exe`. It writes the tar, gzip and PNG icon bytes itself.
+
+```powershell
+.\licoryx_spl_owner_manager-0.1.0.ps1 -OutDir C:\temp\splunk
+```
+
+If your execution policy blocks downloaded scripts, follow your IT policy
+(for example, `Unblock-File .\licoryx_spl_owner_manager-0.1.0.ps1` where
+that is allowed).
+
+> **Status: not yet run in PowerShell.** Its source section is checked to
+> match the `.txt` file exactly, and its tar, gzip, CRC-32 and Adler-32 logic
+> was checked against Python's implementations, but the script itself has not
+> been executed. Check the `.spl` it produces with AppInspect before relying
+> on it.
+
+The program is kept in `scripts/bundle_template.ps1`;
+`scripts/make_text_bundle.py` builds both the `.txt` and the `.ps1`.
+
 ## Build the package yourself
 
 If your network blocks downloading `.spl` / `.gz` files, build the package

@@ -1,1 +1,2 @@
 release/*.txt text eol=lf
+release/*.ps1 text eol=lf

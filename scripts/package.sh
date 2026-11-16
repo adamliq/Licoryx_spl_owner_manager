@@ -7,5 +7,5 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SPL=$(python3 "$ROOT/scripts/package.py" --out-dir "$ROOT/dist")
 mkdir -p "$ROOT/release"
 cp "$SPL" "$ROOT/release/$(basename "$SPL")"
-python3 "$ROOT/scripts/make_text_bundle.py" >/dev/null   # release/<app>-<version>.txt
+python3 "$ROOT/scripts/make_text_bundle.py" >/dev/null   # release/<app>-<version>.{txt,ps1}
 echo "${SPL%.spl}.tgz"
