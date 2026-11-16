@@ -27,11 +27,28 @@ tests/docker/run_all.sh            # starts splunk/splunk:latest, seeds users/lo
 
 Results and screenshots land in `test-results/`.
 
+## Build the package yourself
+
+If your network blocks downloading `.spl` / `.gz` files, build the package
+locally from the plain source files instead. Python 3 is the only requirement
+(Windows, macOS or Linux):
+
+```bash
+git clone https://github.com/adamliq/Licoryx_spl_owner_manager.git
+cd Licoryx_spl_owner_manager
+git checkout claude/wizardly-johnson-mkg4c9
+python scripts/package.py          # Windows: py scripts\package.py
+```
+
+This writes `dist/licoryx_spl_owner_manager-0.1.0.spl` (and an identical
+`.tgz`). It sets the file modes and ownership AppInspect expects, and leaves
+out hidden files, `local/` and `local.meta`.
+
 ## Install
 
 The ready-to-install package is
 [`release/licoryx_spl_owner_manager-0.1.0.spl`](release/licoryx_spl_owner_manager-0.1.0.spl).
-It is rebuilt by `scripts/package.sh` and passes AppInspect with the `cloud`
+It is rebuilt by `scripts/package.sh` (which calls `scripts/package.py`) and passes AppInspect with the `cloud`
 and `private_victoria` tags.
 
 - **Splunk Enterprise:** Apps → Manage Apps → Install app from file, or
