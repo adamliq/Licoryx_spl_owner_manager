@@ -95,7 +95,7 @@ Filtering runs in the browser on the full list. That is enough for tens of thous
 - `metadata/default.meta`:
   - `[] access = read : [ * ], write : [ admin, sc_admin ]`, `export = none`
   - The view and nav can be limited to admin roles to reduce clutter. This is cosmetic.
-- Auditing: Splunk already records each REST call, with the acting user, in `_internal` (`splunkd_access.log`) and in `_audit`. The README will include a sample audit search. The app does not write its own audit index in v1, because that would need write access the user might not have.
+- Auditing (verified on 10.6.1): owner changes made through Splunk Web are logged with the acting user in `_internal` (`splunkd_ui_access`). They are **not** written to `_audit`, which only records lookup creation. If longer-lived auditing is needed, v1.1 could add an optional `collect` into a summary index, which works only when the user has permission to write to that index. The README will include a sample audit search. The app does not write its own audit index in v1, because that would need write access the user might not have.
 
 ## 7. Splunk Cloud and AppInspect compliance checklist
 

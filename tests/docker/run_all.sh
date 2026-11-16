@@ -50,6 +50,6 @@ check "no false orphans for non-admin"         "$(grep -c 'orphaned' "$OUT/alice
 check "no page errors"                         "$(cat "$OUT"/*.log | grep -c 'pageerror\|DIALOG')" "0"
 sleep 15
 check "changes audited as acting user" "$(curl -sk -u "admin:$PW" "$API/services/search/jobs/export" -d output_mode=csv \
-  -d search='search index=_internal sourcetype=splunkd_access method=POST uri="*/bob_private.csv/acl" user=admin status=200 | stats count' | tail -1)" "1"
+  -d search='search index=_internal sourcetype=splunkd_ui_access "POST" "bob_private.csv/acl" "- admin [" | stats count' | tail -1)" "1"
 
 exit $fail

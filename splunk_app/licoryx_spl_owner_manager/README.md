@@ -34,7 +34,13 @@ the same name, reassign the lookup, then delete the user again.
 
 ## Audit
 
-Every change is a REST call made as you. To review changes:
+Every change is a REST call made as you, through Splunk Web. Splunk does not
+write owner changes to `_audit`, but Splunk Web's access log records each one
+with the acting user:
 
-    index=_internal sourcetype=splunkd_access method=POST uri="*/data/lookup-table-files/*/acl"
-    | table _time user uri status
+    index=_internal sourcetype=splunkd_ui_access "POST" "/lookup-table-files/" "/acl"
+    | rex "^\S+ - (?<acting_user>\S+) \[[^\]]+\] \"POST (?<uri>\S+)[^\"]*\" (?<status>\d+)"
+    | table _time acting_user uri status
+
+Note that `_internal` has a short retention period and is not always searchable
+by non-admins on Splunk Cloud.
