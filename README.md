@@ -15,7 +15,7 @@ the full scope.
 
 ```bash
 node --test tests/core.test.js      # unit tests
-scripts/package.sh                  # -> dist/licoryx_spl_owner_manager-0.1.0.tgz
+scripts/package.sh                  # -> release/licoryx_spl_owner_manager-0.1.0.spl (+ dist/*.tgz)
 splunk-appinspect inspect dist/*.tgz --mode precert --included-tags cloud
 ```
 
@@ -27,5 +27,16 @@ tests/docker/run_all.sh            # starts splunk/splunk:latest, seeds users/lo
 
 Results and screenshots land in `test-results/`.
 
-Install the package on Splunk Enterprise (Apps → Install app from file) or
-upload it to Splunk Cloud as a private app, then open **Lookup Owner Manager**.
+## Install
+
+The ready-to-install package is
+[`release/licoryx_spl_owner_manager-0.1.0.spl`](release/licoryx_spl_owner_manager-0.1.0.spl).
+It is rebuilt by `scripts/package.sh` and passes AppInspect with the `cloud`
+and `private_victoria` tags.
+
+- **Splunk Enterprise:** Apps → Manage Apps → Install app from file, or
+  `splunk install app licoryx_spl_owner_manager-0.1.0.spl`
+- **Splunk Cloud:** Apps → Manage Apps → Upload App (private app; it goes
+  through Cloud vetting automatically)
+
+Then open **Lookup Owner Manager**.

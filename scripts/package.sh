@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build dist/<app>-<version>.tgz with AppInspect-friendly permissions.
+# Build dist/<app>-<version>.tgz and release/<app>-<version>.spl with AppInspect-friendly permissions.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 APP=licoryx_spl_owner_manager
@@ -14,4 +14,7 @@ find "$STAGE/$APP" -type f -exec chmod 644 {} +
 mkdir -p "$ROOT/dist"
 OUT="$ROOT/dist/$APP-$VERSION.tgz"
 COPYFILE_DISABLE=1 tar -C "$STAGE" --owner=0 --group=0 -czf "$OUT" "$APP"
+# .spl is the Splunk app package extension; same gzipped tar format.
+mkdir -p "$ROOT/release"
+cp "$OUT" "$ROOT/release/$APP-$VERSION.spl"
 echo "$OUT"
