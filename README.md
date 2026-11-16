@@ -19,5 +19,13 @@ scripts/package.sh                  # -> dist/licoryx_spl_owner_manager-0.1.0.tg
 splunk-appinspect inspect dist/*.tgz --mode precert --included-tags cloud
 ```
 
+### End-to-end test against Splunk in Docker
+
+```bash
+tests/docker/run_all.sh            # starts splunk/splunk:latest, seeds users/lookups, runs UI tests
+```
+
+Results and screenshots land in `test-results/`.
+
 Install the package on Splunk Enterprise (Apps → Install app from file) or
 upload it to Splunk Cloud as a private app, then open **Lookup Owner Manager**.

@@ -31,11 +31,22 @@
                 readPerms: perms.read || [],
                 writePerms: perms.write || [],
                 canChangePerms: acl.can_change_perms !== false,
-                aclPath: (e.links && e.links.acl) || null,
+                aclPath: aclPathFor(e),
                 path: (e.content && e.content['eai:data']) || '',
                 updated: e.updated || ''
             };
         });
+    }
+
+    /**
+     * ACL endpoint for an entry. Splunk 10.x does not list `acl` in
+     * entry.links for lookup-table-files, but <alternate>/acl works.
+     */
+    function aclPathFor(e) {
+        var links = e.links || {};
+        if (links.acl) return links.acl;
+        if (links.alternate) return links.alternate.replace(/\/$/, '') + '/acl';
+        return null;
     }
 
     /** Names of users from an authentication/users response. */
@@ -107,15 +118,13 @@
 
     /**
      * Why a row can't be changed, or null if it can.
-     * opts: { allowPrivate }
+     * Private (sharing=user) lookups are allowed: on Splunk 10.6 an owner
+     * change moves the file into the new owner's user folder.
      */
-    function blockReason(row, newOwner, opts) {
+    function blockReason(row, newOwner) {
         if (!row.aclPath) return 'No ACL endpoint returned for this object.';
         if (!newOwner) return 'No new owner selected.';
         if (row.owner === newOwner) return 'Already owned by ' + newOwner + '.';
-        if (row.sharing === 'user' && !(opts && opts.allowPrivate)) {
-            return 'Private object: the file lives in the owner\'s user folder (see SCOPE O1).';
-        }
         return null;
     }
 

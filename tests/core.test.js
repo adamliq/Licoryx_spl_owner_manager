@@ -8,7 +8,8 @@ const sample = {
       acl: { app: 'search', owner: 'alice', sharing: 'app', perms: { read: ['*'], write: ['admin', 'power'] } } },
     { name: 'ids.csv', links: { alternate: '/servicesNS/bob/sec/data/lookup-table-files/ids.csv', acl: '/servicesNS/bob/sec/data/lookup-table-files/ids.csv/acl' },
       acl: { app: 'sec', owner: 'bob', sharing: 'user', perms: null } },
-    { name: 'geo_assets.csv', links: { alternate: '/servicesNS/nobody/sec/data/lookup-table-files/geo_assets.csv', acl: '/servicesNS/nobody/sec/data/lookup-table-files/geo_assets.csv/acl' },
+    // Shape seen on Splunk 10.6: no links.acl
+    { name: 'geo_assets.csv', links: { alternate: '/servicesNS/nobody/sec/data/lookup-table-files/geo_assets.csv' },
       acl: { app: 'sec', owner: 'nobody', sharing: 'global', perms: { read: ['*'], write: ['admin'] } } }
   ]
 };
@@ -20,6 +21,8 @@ test('parseLookups flattens ACL', () => {
   assert.deepStrictEqual(rows[0].writePerms, ['admin', 'power']);
   assert.deepStrictEqual(rows[1].readPerms, []);
   assert.match(rows[0].aclPath, /\/acl$/);
+  assert.strictEqual(rows[2].aclPath, '/servicesNS/nobody/sec/data/lookup-table-files/geo_assets.csv/acl',
+    'derived from links.alternate when links.acl is missing');
 });
 
 test('orphan detection', () => {
@@ -48,8 +51,7 @@ test('ACL body keeps sharing and perms', () => {
 test('block reasons', () => {
   assert.strictEqual(core.blockReason(rows[0], 'carol'), null);
   assert.match(core.blockReason(rows[0], 'alice'), /Already owned/);
-  assert.match(core.blockReason(rows[1], 'carol'), /Private/);
-  assert.strictEqual(core.blockReason(rows[1], 'carol', { allowPrivate: true }), null);
+  assert.strictEqual(core.blockReason(rows[1], 'carol'), null, 'private lookups are allowed');
   assert.match(core.blockReason(rows[0], ''), /No new owner/);
 });
 

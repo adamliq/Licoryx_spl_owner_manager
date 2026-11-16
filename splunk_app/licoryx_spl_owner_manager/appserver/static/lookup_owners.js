@@ -46,7 +46,8 @@ require([
     }
 
     function post(path, body, cb) {
-        service.post(path, $.extend({ output_mode: 'json' }, body), function (err) { cb(err || null); });
+        // No output_mode here: the ACL handler rejects unknown arguments.
+        service.post(path, body, function (err) { cb(err || null); });
     }
 
     // ---------- Layout ----------
@@ -112,14 +113,19 @@ require([
         var lookups = get('/servicesNS/-/-/data/lookup-table-files', { count: 0 }).then(function (d) {
             state.rows = core.parseLookups(d);
         });
-        // Users are optional: non-admins often can't list them.
+        // Users are optional. Without edit_user, splunkd returns only the
+        // caller's own account, which would make every other owner look
+        // orphaned, so the list is ignored in that case.
         var users = $.Deferred();
         get('/services/authentication/users', { count: 0, f: 'title' }).then(
-            function (d) { state.users = core.parseUsers(d); state.userSet = new Set(state.users); users.resolve(); },
-            function () { state.users = null; state.userSet = null; users.resolve(); }
+            function (d) { users.resolve(core.parseUsers(d)); },
+            function () { users.resolve(null); }
         );
 
-        $.when(ctx, lookups, users).then(function () {
+        $.when(ctx, lookups, users).then(function (a, b, userList) {
+            var full = userList && core.hasCapability(state.caps, 'edit_user');
+            state.users = full ? userList : null;
+            state.userSet = full ? new Set(userList) : null;
             state.canChange = core.hasCapability(state.caps, 'admin_all_objects');
             renderHeader();
             populateFilterOptions();
@@ -229,10 +235,8 @@ require([
             '<h3>Change owner of ' + rows.length + ' lookup' + (rows.length === 1 ? '' : 's') + '</h3>' +
             '<label>New owner <input type="text" class="lom-new-owner" list="lom-users" autocomplete="off"></label>' +
             '<datalist id="lom-users">' + userOpts + '</datalist>' +
-            (hasPrivate ? '<p class="lom-warn">Some lookups are private. Changing the owner of a private object may leave ' +
-                'the file in the old owner\'s user folder, out of the new owner\'s reach. They are skipped unless you tick ' +
-                'the box below (only for spike testing).</p>' +
-                '<label><input type="checkbox" class="lom-allow-private"> Include private lookups (experimental)</label>' : '') +
+            (hasPrivate ? '<p class="lom-warn">Some lookups are private. Splunk moves a private lookup into the new ' +
+                'owner\'s private space: the new owner gets it and the previous owner loses access to it.</p>' : '') +
             '<div class="lom-preview"></div>' +
             (rows.length > 1 ? '<label>Type <b>' + rows.length + '</b> to confirm <input type="text" class="lom-confirm-count" size="6"></label>' : '') +
             '<div class="lom-modal-actions"><button class="btn lom-cancel">Cancel</button> ' +
@@ -243,10 +247,7 @@ require([
     }
 
     function modalOpts() {
-        return {
-            owner: $.trim($root.find('.lom-new-owner').val() || ''),
-            allowPrivate: $root.find('.lom-allow-private').is(':checked')
-        };
+        return { owner: $.trim($root.find('.lom-new-owner').val() || '') };
     }
 
     function updatePreview() {
@@ -255,7 +256,7 @@ require([
         var ok = 0;
         var html = '<table class="table"><thead><tr><th>Lookup</th><th>App</th><th>Change</th></tr></thead><tbody>' +
             rows.map(function (r) {
-                var why = core.blockReason(r, o.owner, o);
+                var why = core.blockReason(r, o.owner);
                 if (!why) ok++;
                 return '<tr' + (why ? ' class="lom-skip"' : '') + '><td>' + esc(r.name) + '</td><td>' + esc(r.app) + '</td><td>' +
                     (why ? 'Skipped: ' + esc(why) : esc(r.owner) + ' → ' + esc(o.owner)) + '</td></tr>';
@@ -274,7 +275,7 @@ require([
         var rows = selectedRows();
         var todo = [], results = [];
         rows.forEach(function (r) {
-            var why = core.blockReason(r, o.owner, o);
+            var why = core.blockReason(r, o.owner);
             if (why) results.push({ row: r, ok: false, skipped: true, msg: why });
             else todo.push(r);
         });
@@ -381,7 +382,7 @@ require([
     $root.on('click', '.lom-export', exportCsv);
     $root.on('click', '.lom-change', openModal);
     $root.on('click', '.lom-cancel', closeModal);
-    $root.on('input change', '.lom-new-owner, .lom-allow-private, .lom-confirm-count', updatePreview);
+    $root.on('input change', '.lom-new-owner, .lom-confirm-count', updatePreview);
     $root.on('click', '.lom-confirm', execute);
     $root.on('click', '.lom-retry', retryFailed);
     $root.on('click', '.lom-dismiss', function () { $root.find('.lom-results').attr('hidden', true); });

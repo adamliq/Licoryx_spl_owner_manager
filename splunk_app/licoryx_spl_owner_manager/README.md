@@ -22,9 +22,15 @@ Changing another user's object normally needs the `admin_all_objects`
 capability (`sc_admin` on Splunk Cloud, `admin` on Splunk Enterprise).
 The "Can change owners" badge is only a hint; Splunk enforces the real check.
 
-Private (user-shared) lookups are skipped by default, because the file sits in
-the old owner's user folder. A checkbox in the confirmation dialog includes them
-for testing.
+A `power` user cannot change the owner even of their own lookup (tested on
+Splunk Enterprise 10.6.1).
+
+Changing the owner of a private (user-shared) lookup moves the file into the
+new owner's private space: the previous owner loses access to it.
+
+Private lookups that belong to a **deleted** user are not visible through the
+REST API, so this app can't list them. To recover one, recreate the user with
+the same name, reassign the lookup, then delete the user again.
 
 ## Audit
 

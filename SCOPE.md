@@ -79,7 +79,7 @@ Browser (logged-in user)
 4. **Action bar** (appears when rows are selected): **Change owner…** opens a modal with:
    - a type-ahead picker for the new owner (active users, plus `nobody`)
    - a preview table of the selected objects (current owner → new owner)
-   - warnings for private (`user`-sharing) objects (see O1)
+   - a note for private (`user`-sharing) objects: the file moves to the new owner (see O1)
    - a Confirm button. Bulk changes ask the user to type the number of objects.
 5. **Results panel:** success or failure for each object, with the Splunk error message, and a "Retry failed" button.
 6. **Empty, error and loading states,** including a clear message on 403: "Your role lacks permission to change ownership of this object."
@@ -133,15 +133,20 @@ licoryx_spl_owner_manager/
 
 ## 9. Open questions and risks (resolved in the Week-1 spike)
 
+O1, O2, O7 and O9 were resolved by Docker testing on Splunk Enterprise 10.6.1 (`tests/docker/run_all.sh`).
+
+
 | ID | Question / risk | Plan |
 |---|---|---|
-| O1 | **Private (`sharing=user`) lookups.** The file lives under `etc/users/<old>/<app>/lookups/`. Changing only the owner may leave it in the old user's folder, where the new owner can't reach it. | Test on Cloud and Enterprise. Likely v1 behaviour: block owner change on private objects, or offer "share to app first" as an explicit two-step action with a warning. |
-| O2 | Exact capability needed to change owner, and whether an object's owner can hand it off without `admin_all_objects`. | Test with `sc_admin`, `power` and a custom role. Write the results into the README. |
+| O1 | **Private (`sharing=user`) lookups.** The file lives under `etc/users/<old>/<app>/lookups/`. Changing only the owner may leave it in the old user's folder, where the new owner can't reach it. | **Resolved on Enterprise 10.6.1 (Docker):** the ACL owner change *moves* the file to `etc/users/<new>/<app>/lookups/`. The new owner can list and query it; the old owner loses access. The app allows it and shows an informational note. Still to confirm on Cloud. |
+| O2 | Exact capability needed to change owner, and whether an object's owner can hand it off without `admin_all_objects`. | **Resolved on Enterprise 10.6.1:** a `power` user cannot change the owner even of a lookup they own and that `power` can write ("You do not have permission to change the owner of this object"). Owner changes need `admin_all_objects`. Still to confirm `sc_admin` on Cloud. |
 | O3 | **UI framework passes Cloud vetting.** The UI Toolkit page (`type="html"` view with a template) needs to pass the current AppInspect `cloud` tag checks. | First task in the spike: build a hello-world page, package it and run AppInspect. Fallback: a Simple XML `version="1.1"` dashboard with a bundled JS extension, still client-side only. |
 | O4 | Fields returned by `lookup-table-files` (size and modified time are not always present). | Check; drop those columns if they are missing. |
 | O5 | Performance with very large estates (more than 20k lookups) and many apps. | Use `count=0` with `f=` field filtering to shrink the payload. If needed, fall back to server-side `search=` filtering. |
 | O6 | Lookups whose definitions (transforms) are owned by a different user. | Show a hint in v1. Handle fully in v1.1. |
-| O7 | Non-admin users without `list_users` / `edit_user` can't fetch the user list. | Degrade gracefully: free-text owner input and no orphan filter. |
+| O7 | Non-admin users without `list_users` / `edit_user` can't fetch the user list. | **Resolved:** without `edit_user`, `authentication/users` succeeds but returns only the caller, which made every other owner look orphaned. The app now trusts the list only when the user has `edit_user`. |
+| O8 | **New: private lookups of deleted users.** Splunk keeps the file on disk, but REST omits it from listings and returns "Action forbidden" even to admins. | Out of reach for any REST-only app, including on Cloud. Document it. Workaround: recreate the user (same name), reassign, then delete the user again. |
+| O9 | **New: REST quirks on 10.6.** `lookup-table-files` entries have no `links.acl`, and the ACL handler rejects `output_mode` in the POST body. | Fixed in the POC: the ACL path is derived from `links.alternate`, and writes don't send `output_mode`. |
 
 ## 10. Milestones (estimate: 1 developer)
 
