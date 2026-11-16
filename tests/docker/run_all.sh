@@ -13,9 +13,14 @@ docker rm -f splunk >/dev/null 2>&1 || true
 docker run -d --name splunk --network host \
   -e SPLUNK_START_ARGS=--accept-license -e SPLUNK_GENERAL_TERMS=--accept-sgt-current-at-splunk-com \
   -e SPLUNK_PASSWORD="$PW" -e SPLUNK_APPS_URL=/tmp/app.tgz \
-  -v "$PWD/$PKG:/tmp/app.tgz:ro" "$IMAGE" >/dev/null
+  -v "$PKG:/tmp/app.tgz:ro" "$IMAGE" >/dev/null
 echo "waiting for splunk..."
-until [ "$(docker inspect -f '{{.State.Health.Status}}' splunk)" = healthy ]; do sleep 10; done
+until [ "$(docker inspect -f '{{.State.Health.Status}}' splunk)" = healthy ]; do
+  if [ "$(docker inspect -f '{{.State.Running}}' splunk)" != true ]; then
+    echo "splunk container exited:"; docker logs splunk 2>&1 | grep -iE 'fatal|error' | head; exit 1
+  fi
+  sleep 10
+done
 
 tests/docker/setup_data.sh splunk "$PW"
 
