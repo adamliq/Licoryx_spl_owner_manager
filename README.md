@@ -27,6 +27,22 @@ tests/docker/run_all.sh            # starts splunk/splunk:latest, seeds users/lo
 
 Results and screenshots land in `test-results/`.
 
+## The app as a single text file
+
+[`release/licoryx_spl_owner_manager-0.1.0.txt`](release/licoryx_spl_owner_manager-0.1.0.txt)
+holds the whole app as plain, readable text: a short Python program followed by
+every source file, each line prefixed with `#|`. Nothing is encoded. To rebuild
+the app folder and the `.spl` from it (Python 3 only):
+
+```bash
+python licoryx_spl_owner_manager-0.1.0.txt --out-dir .     # Windows: py ...
+```
+
+The app icons are the only binary files, so the program draws them instead of
+embedding them. The file still works if it was saved with Windows (CRLF) line
+endings. `scripts/make_text_bundle.py` regenerates it, and `scripts/package.sh`
+runs that automatically.
+
 ## Build the package yourself
 
 If your network blocks downloading `.spl` / `.gz` files, build the package
