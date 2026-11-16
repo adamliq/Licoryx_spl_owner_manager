@@ -1,0 +1,37 @@
+#lom-root { font-size: 13px; }
+#lom-root .btn { margin: 0 2px; }
+.lom-header, .lom-actions { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+.lom-actions { justify-content: flex-start; }
+.lom-actions .lom-count { margin-right: auto; }
+.lom-title { font-size: 18px; font-weight: 600; }
+.lom-who { color: #6b7785; }
+.lom-badge { padding: 2px 8px; border-radius: 10px; font-size: 12px; }
+.lom-badge-ok { background: #dff3e4; color: #1a6b33; }
+.lom-badge-ro { background: #fdf0d5; color: #7a5200; }
+.lom-banner { padding: 8px 12px; border-radius: 4px; margin-bottom: 10px; }
+.lom-banner-info { background: #e8f1fb; }
+.lom-banner-warn { background: #fdf0d5; }
+.lom-banner-error { background: #fbe3e3; color: #8a1c1c; }
+.lom-filters { display: flex; gap: 14px; align-items: flex-end; flex-wrap: wrap; padding: 10px; background: rgba(127,127,127,.08); border-radius: 4px; margin-bottom: 10px; }
+.lom-filters label { display: flex; flex-direction: column; gap: 4px; margin: 0; }
+.lom-filters select[multiple] { min-width: 180px; height: 90px; }
+.lom-filters fieldset { border: 0; margin: 0; padding: 0; }
+.lom-filters fieldset label, .lom-orphan-wrap { flex-direction: row !important; align-items: center; }
+.lom-filters legend { font-size: 13px; border: 0; margin: 0 0 4px; width: auto; }
+.lom-table th[data-key] { cursor: pointer; user-select: none; }
+.lom-table th.lom-sorted[data-dir="asc"]::after { content: " ▲"; }
+.lom-table th.lom-sorted[data-dir="desc"]::after { content: " ▼"; }
+.lom-tag-orphan { background: #fbe3e3; color: #8a1c1c; border-radius: 8px; padding: 0 6px; font-size: 11px; }
+.lom-empty { text-align: center; color: #6b7785; padding: 20px !important; }
+.lom-pager { margin: 8px 0; }
+.lom-results { margin-top: 16px; }
+.lom-ok td:last-child { color: #1a6b33; }
+.lom-fail td:last-child { color: #8a1c1c; }
+.lom-skip { color: #6b7785; }
+.lom-warn { background: #fdf0d5; color: #5a3d00; padding: 8px; border-radius: 4px; }
+.lom-modal { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 1000; display: flex; align-items: center; justify-content: center; }
+.lom-modal[hidden] { display: none; }
+.lom-modal-body { background: #fff; color: #222; padding: 20px; border-radius: 6px; width: min(720px, 92vw); max-height: 85vh; overflow: auto; }
+.lom-modal-body label { display: block; margin: 10px 0; }
+.lom-preview { max-height: 300px; overflow: auto; margin: 10px 0; }
+.lom-modal-actions { text-align: right; margin-top: 12px; }

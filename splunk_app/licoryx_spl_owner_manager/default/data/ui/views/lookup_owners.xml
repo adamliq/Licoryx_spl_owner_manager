@@ -1,0 +1,11 @@
+<dashboard version="1.1" script="lookup_owners.js" stylesheet="lookup_owners.css" hideEdit="true" hideExport="true">
+  <label>Lookup Owners</label>
+  <description>Find lookup table files and change their owner. Uses only your own Splunk permissions.</description>
+  <row>
+    <panel>
+      <html>
+        <div id="lom-root">Loading…</div>
+      </html>
+    </panel>
+  </row>
+</dashboard>

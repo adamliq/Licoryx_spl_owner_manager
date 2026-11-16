@@ -1,0 +1,5 @@
+# Everyone can read app objects; Splunk still enforces each user's own
+# permissions on every REST call the page makes.
+[]
+access = read : [ * ], write : [ admin, sc_admin ]
+export = none

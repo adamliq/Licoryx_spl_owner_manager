@@ -1,6 +1,6 @@
 # Scope: Licoryx Lookup Owner Manager (Splunk app)
 
-**Status:** Draft scope, 2026-11-16
+**Status:** Draft scope, 2026-11-16. POC v0.1.0 built (see README).
 **App ID (proposed):** `licoryx_spl_owner_manager`
 
 ## 1. Goal

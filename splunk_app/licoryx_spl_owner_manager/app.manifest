@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "2.0.0",
+  "info": {
+    "title": "Lookup Owner Manager",
+    "id": {
+      "group": null,
+      "name": "licoryx_spl_owner_manager",
+      "version": "0.1.0"
+    },
+    "author": [
+      {
+        "name": "Licoryx",
+        "email": null,
+        "company": null
+      }
+    ],
+    "releaseDate": null,
+    "description": "Find lookup table files and change their owner, using only the logged-in user's permissions.",
+    "classification": {
+      "intendedAudience": "Administrators",
+      "categories": ["Utilities"],
+      "developmentStatus": "Alpha"
+    },
+    "commonInformationModels": null,
+    "license": {
+      "name": null,
+      "text": null,
+      "uri": null
+    },
+    "privacyPolicy": {
+      "name": null,
+      "text": null,
+      "uri": null
+    },
+    "releaseNotes": {
+      "name": null,
+      "text": null,
+      "uri": null
+    }
+  },
+  "dependencies": null,
+  "tasks": null,
+  "inputGroups": null,
+  "incompatibleApps": null,
+  "platformRequirements": null,
+  "supportedDeployments": ["_standalone", "_distributed", "_search_head_clustering"],
+  "targetWorkloads": ["_search_heads"]
+}
