@@ -11,6 +11,7 @@ The only binary files, the app icons, are drawn by code instead of embedded.
 import os
 import sys
 
+sys.dont_write_bytecode = True
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import package  # noqa: E402  (scripts/package.py)
 
